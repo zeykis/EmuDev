@@ -129,7 +129,6 @@ Else, it will be two spaces.
 The clear value says wether you should clear the terminal before printing or not.
 There should be a frame around the display. See the example below.
 There is a trailing new line. */
-            int i = 0;
             if (clearScreen)
             {
                 Console.Clear();
@@ -140,7 +139,7 @@ There is a trailing new line. */
                 Console.Write("|");
                 for (int x = 0; x < 64; x++)
                 {
-                    if (_gfx[i])
+                    if (_gfx[x])
                     {
                         Console.Write("██");
                     }
@@ -148,7 +147,7 @@ There is a trailing new line. */
                     {
                         Console.Write("  ");
                     }
-                    i++;
+                    ;
                 }
                 Console.WriteLine("|");
             }
@@ -157,7 +156,7 @@ There is a trailing new line. */
 
         private void DebugInstruction()
         {
-            Console.WriteLine("PC = " + this[_PC]);
+            Console.WriteLine("PC = " + _PC);
             Console.WriteLine("Instruction = " + _I);
 
         }
@@ -170,7 +169,12 @@ There is a trailing new line. */
 
         private void DebugRegister()
         {
-            throw new NotImplementedException();
+            Console.WriteLine("I = "+ _I.ToString("X1"));
+            for (int i = 0; i < 16; i++)
+            {
+                // Exemple : V0=0x0000, V1=0x0000, V2=0x0000, V3=0x0000, V4=0x0000, V5=0x0000, V6=0x0000, V7=0x0000, V8=0x0000, V9=0x0000, VA=0x0000, VB=0x0000, VC=0x0000, VD=0x0000, VE=0x0000, VF=0x0000
+                Console.Write("V" + i.ToString("X1") + "=" + _registers[i].ToString("X1") + ", ");
+            }
         }
 
         private void DebugStack()
