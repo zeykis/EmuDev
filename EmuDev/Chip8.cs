@@ -4,6 +4,7 @@ using System.IO;
 
 namespace Emudev
 {
+
     public enum Debug
     {
         Instruction,
@@ -36,44 +37,84 @@ namespace Emudev
  
         public Chip8(Random random)
         {
-            throw new NotImplementedException();
+            byte[] font = new byte[]
+            {
+                0xF0, 0x90, 0x90, 0x90, 0xF0,
+                0x20, 0x60, 0x20, 0x20, 0x70,
+                0xF0, 0x10, 0xF0, 0x80, 0xF0,
+                0xF0, 0x10, 0xF0, 0x10, 0xF0,
+                0x90, 0x90, 0xF0, 0x10, 0x10,
+                0xF0, 0x80, 0xF0, 0x10, 0xF0,
+                0xF0, 0x80, 0xF0, 0x90, 0xF0,
+                0xF0, 0x10, 0x20, 0x40, 0x40,
+                0xF0, 0x90, 0xF0, 0x90, 0xF0,
+                0xF0, 0x90, 0xF0, 0x10, 0xF0,
+                0xF0, 0x90, 0xF0, 0x90, 0x90,
+                0xE0, 0x90, 0xE0, 0x90, 0xE0,
+                0xF0, 0x80, 0x80, 0x80, 0xF0,
+                0xE0, 0x90, 0x90, 0x90, 0xE0,
+                0xF0, 0x80, 0xF0, 0x80, 0xF0,
+                0xF0, 0x80, 0xF0, 0x80, 0x80
+            };
+
+            _memory = new byte[4096];
+            _gfx = new bool[32 * 64];
+            _input = new Queue<bool[]>();
+            _handlers = new Dictionary<byte, Action<ushort>>(16);
+            _random = random;
+            _PC = 0x200;
+            _stack = new Stack<ushort>();
+            _registers = new byte[16];
+            _delayTimer = 0;
+            _soundTimer = 0;
+            _I = 0x0;
+
+            for (int i = 0; i < font.Length; i++)
+            {
+                _memory[i] = font[i];
+            }
         }
 
         public Dictionary<byte, Action<ushort>> Handlers { get; }
         
         public ushort this[int i]
         {
-            get { throw new NotImplementedException(); }
+            get { return (ushort)(_memory[i] << 8 | _memory[i + 1]); }
         }
         
         private byte GetNibble(ushort instruction, int n)
         {
-            throw new NotImplementedException();
+            return (byte)((instruction >> (n * 4)) & 0xF);
         }
-
+        /*
+    X or Y, indexes of registers. When used, X is always the second nibble and Y the third.
+    NNN, an address. When used, NNN is always the last three nibbles.
+    NN, a value (from 0 to 256). When used, NN is always the last two nibbles.
+    N, a value (from 0 to 16). When used, N is always the last nibble.
+*/
         private byte GetN(ushort instruction)
         {
-            throw new NotImplementedException();
+            return (byte)(instruction & 0xF);
         }
 
         private byte GetNN(ushort instruction)
         {
-            throw new NotImplementedException();
+            return (byte)(instruction & 0xFF);
         }
         
         private ushort GetNNN(ushort instruction)
         {
-            throw new NotImplementedException();
+            return (ushort)(instruction & 0xFFF);
         }
         
         private byte GetX(ushort instruction)
         {
-            throw new NotImplementedException();
+            return GetNibble(instruction, 2);
         }
         
         private byte GetY(ushort instruction)
         {
-            throw new NotImplementedException();
+            return GetNibble(instruction, 3);
         }
         public void ParseInput(string filepath)
         {
@@ -82,18 +123,49 @@ namespace Emudev
         
         private void Display(bool clearScreen)
         {
-            throw new NotImplementedException();
+            /*This method displays the graphical memory of the computer.
+If a pixel is on (true) it will be represented by two █ (219 in extended ascii).
+Else, it will be two spaces.
+The clear value says wether you should clear the terminal before printing or not.
+There should be a frame around the display. See the example below.
+There is a trailing new line. */
+            int i = 0;
+            if (clearScreen)
+            {
+                Console.Clear();
+            }
+            Console.WriteLine("----------------------------------------------------------------------------------------------------------------------------------");
+            for (int y = 0; y < 32; y++)
+            {
+                Console.Write("|");
+                for (int x = 0; x < 64; x++)
+                {
+                    if (_gfx[i])
+                    {
+                        Console.Write("██");
+                    }
+                    else
+                    {
+                        Console.Write("  ");
+                    }
+                    i++;
+                }
+                Console.WriteLine("|");
+            }
             
         }
 
         private void DebugInstruction()
         {
-            throw new NotImplementedException();
+            Console.WriteLine("PC = " + this[_PC]);
+            Console.WriteLine("Instruction = " + _I);
+
         }
 
         private void DebugTimer()
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Delay = " + _delayTimer);
+            Console.WriteLine("Sound = " + _soundTimer);
         }
 
         private void DebugRegister()
@@ -217,3 +289,18 @@ namespace Emudev
         }
     }
 }
+
+
+
+
+
+for(int i = 0; i < 16; i++)
+{
+    stuff ;
+}
+
+_list[0] = the value at i = 0;
+_list[1] = the value at i = 1;
+_list[2] = the value at i = 2;
+_list[3] = the value at i = 3;
+_list[4] = the value at i = 4;

@@ -1,3 +1,2 @@
-﻿// See https://aka.ms/new-console-template for more information
-
-Console.WriteLine("Hello, World!");
+﻿//test chip8
+Chip8 test = new Chip8();
